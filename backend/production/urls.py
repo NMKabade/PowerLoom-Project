@@ -2,7 +2,8 @@ from django.urls import path
 from .views import (
     ProductionCreateView, MyProductionListView, AllProductionListView,
     ProductionApprovalView, SalarySummaryView, OwnerDashboardView,
-    MachineMasterListCreateView, MachineMasterDetailView, MachineMasterPublicListView
+    MachineMasterListCreateView, MachineMasterDetailView, MachineMasterPublicListView,
+    CurrencyMasterListView
 )
 
 urlpatterns = [
@@ -16,6 +17,9 @@ urlpatterns = [
 
     # Machine Master
     path('machines/', MachineMasterListCreateView.as_view(), name='machine_list_create'),
-    path('machines/<int:pk>/', MachineMasterDetailView.as_view(), name='machine_detail'),
+    path('machines/<uuid:pk>/', MachineMasterDetailView.as_view(), name='machine_detail'),
     path('machines/dropdown/', MachineMasterPublicListView.as_view(), name='machine_dropdown'),
+
+    # Currency Master
+    path('currencies/', CurrencyMasterListView.as_view(), name='currency_list'),
 ]

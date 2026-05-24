@@ -1,81 +1,82 @@
 <div class="min-h-screen flex text-gray-900 bg-gray-50">
   <!-- Left Side Form -->
-  <div class="w-full lg:w-1/2 flex items-center justify-center p-8 overflow-y-auto">
+  <div class="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 overflow-y-auto">
     <div class="max-w-md w-full animate-fade-in relative z-10">
       
-      <div class="mb-10 text-center lg:text-left">
-        <h2 class="text-3xl font-bold mb-2 text-indigo-900">Create an Account</h2>
-        <p class="text-gray-500">Join PowerLoom as a Jober to log your daily production and track your earnings.</p>
+      <div class="mb-12 text-center lg:text-left">
+        <h2 class="text-4xl font-black mb-3 text-gray-900 tracking-tight">Create Account</h2>
+        <p class="text-sm text-gray-400 font-bold uppercase tracking-widest">Join PowerLoom as a Jober</p>
       </div>
 
-      <form class="space-y-5" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <form class="space-y-6" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
         
-        <div *ngIf="errorMsg" class="p-4 bg-red-50/80 backdrop-blur-sm border border-red-200 text-red-600 rounded-xl text-sm animate-fade-in shadow-sm">
+        <div *ngIf="errorMsg" class="p-4 bg-red-50 border border-red-100 text-red-600 rounded-2xl text-sm font-bold animate-shake">
           {{ errorMsg }}
         </div>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+        <div class="space-y-2">
+          <label class="block text-sm font-bold text-gray-600 ml-1">Username</label>
           <input formControlName="username" type="text"
-            class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-sm bg-white" placeholder="johndoe123">
+            class="w-full px-5 py-3.5 rounded-2xl border border-gray-100 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all bg-gray-50 outline-none text-gray-800 font-medium placeholder:text-gray-300" placeholder="e.g. johndoe123">
         </div>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+        <div class="space-y-2">
+          <label class="block text-sm font-bold text-gray-600 ml-1">Password</label>
           <input formControlName="password" type="password"
-            class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-sm bg-white" placeholder="••••••••">
+            class="w-full px-5 py-3.5 rounded-2xl border border-gray-100 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all bg-gray-50 outline-none text-gray-800 font-medium placeholder:text-gray-300" placeholder="••••••••">
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+        <div class="grid grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label class="block text-sm font-bold text-gray-600 ml-1">First Name</label>
             <input formControlName="first_name" type="text"
-              class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-sm bg-white" placeholder="John">
+              class="w-full px-5 py-3.5 rounded-2xl border border-gray-100 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all bg-gray-50 outline-none text-gray-800 font-medium placeholder:text-gray-300" placeholder="John">
           </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+          <div class="space-y-2">
+            <label class="block text-sm font-bold text-gray-600 ml-1">Last Name</label>
             <input formControlName="last_name" type="text"
-              class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-sm bg-white" placeholder="Doe">
+              class="w-full px-5 py-3.5 rounded-2xl border border-gray-100 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all bg-gray-50 outline-none text-gray-800 font-medium placeholder:text-gray-300" placeholder="Doe">
           </div>
         </div>
 
-        <div formGroupName="profile" class="space-y-5">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+        <div formGroupName="profile" class="space-y-6">
+          <div class="space-y-2">
+            <label class="block text-sm font-bold text-gray-600 ml-1">Phone</label>
             <input formControlName="phone" type="text"
-              class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-sm bg-white" placeholder="+1 (555) 000-0000">
+              class="w-full px-5 py-3.5 rounded-2xl border border-gray-100 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all bg-gray-50 outline-none text-gray-800 font-medium placeholder:text-gray-300" placeholder="+91 XXXXX XXXXX">
           </div>
           
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+          <div class="space-y-2">
+            <label class="block text-sm font-bold text-gray-600 ml-1">Address</label>
             <textarea formControlName="address" rows="2"
-              class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-sm bg-white" placeholder="Your street address"></textarea>
+              class="w-full px-5 py-3.5 rounded-2xl border border-gray-100 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all bg-gray-50 outline-none text-gray-800 font-medium placeholder:text-gray-300 resize-none"></textarea>
           </div>
         </div>
 
-        <div class="pt-2">
+        <div class="pt-4">
           <button type="submit" [disabled]="registerForm.invalid || isLoading"
-            class="w-full py-3 px-4 flex justify-center text-white bg-indigo-600 rounded-xl hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 font-semibold shadow-md transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0">
+            class="w-full py-4.5 px-6 flex justify-center items-center text-white bg-[#A5A6F6] rounded-[1.25rem] shadow-xl shadow-indigo-100 hover:shadow-indigo-200 hover:-translate-y-1 active:scale-95 transition-all font-black text-lg uppercase tracking-widest disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none">
             <span *ngIf="!isLoading">Register Account</span>
             <span *ngIf="isLoading" class="flex items-center">
-              <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <svg class="animate-spin -ml-1 mr-3 h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              Creating...
+              Creating Account...
             </span>
           </button>
         </div>
       </form>
 
-      <div class="mt-8 pt-8 border-t border-gray-200 flex flex-col items-center">
-        <p class="text-sm text-gray-500 mb-4">Already have an account?</p>
-        <a routerLink="/login" class="w-full py-3 px-4 flex justify-center text-gray-800 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 font-semibold shadow-sm transition-all">
+      <div class="mt-10 pt-10 border-t border-gray-100 flex flex-col items-center">
+        <p class="text-sm text-gray-400 font-bold uppercase tracking-widest mb-5">Already have an account?</p>
+        <a routerLink="/login" class="w-full py-4 px-6 flex justify-center text-gray-600 border-2 border-gray-100 rounded-xl hover:bg-gray-50 transition-all font-black text-sm uppercase tracking-widest">
           Sign In Instead
         </a>
       </div>
     </div>
   </div>
+
 
   <!-- Right Side Visuals -->
   <div class="hidden lg:flex w-1/2 bg-indigo-50 flex-col justify-center relative overflow-hidden">

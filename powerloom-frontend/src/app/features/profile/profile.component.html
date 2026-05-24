@@ -1,0 +1,215 @@
+<div class="mx-auto py-6 sm:py-12 px-4 sm:px-6 lg:px-8 animate-fade-in">
+
+  <!-- Header Section -->
+  <div class="mb-6 sm:mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
+    <div class="text-center md:text-left">
+      <h1 class="text-2xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">Account Settings</h1>
+      <p class="mt-2 text-sm sm:text-lg text-gray-500">Manage your personal information and preferences.</p>
+    </div>
+    <button *ngIf="!isEditing() && !isLoading()" (click)="toggleEdit()"
+      class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-indigo-600 font-bold rounded-2xl shadow-lg border border-indigo-50 hover:bg-indigo-50 transition-all hover:-translate-y-0.5">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+      </svg>
+      Edit Profile
+    </button>
+  </div>
+
+  <div class="bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-gray-100 overflow-hidden relative">
+    <!-- Decorative Background Blob -->
+    <div
+      class="absolute top-0 right-0 w-64 h-64 bg-indigo-50 rounded-full -translate-y-1/2 translate-x-1/2 opacity-50 blur-3xl pointer-events-none">
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading()" class="flex flex-col items-center justify-center py-24 space-y-4">
+      <div class="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+      <p class="text-indigo-600 font-bold animate-pulse">Fetching your details...</p>
+    </div>
+
+    <!-- Main Content -->
+    <div *ngIf="!isLoading()" class="p-6 sm:p-12 relative z-10">
+
+      <!-- Feedback Message -->
+      <div *ngIf="message() as msg"
+        [class]="'mb-8 p-4 rounded-2xl flex items-center gap-3 animate-slide-up ' + 
+                    (msg.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-red-50 text-red-700 border border-red-100')">
+        <svg *ngIf="msg.type === 'success'" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <svg *ngIf="msg.type === 'error'" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span class="font-bold">{{ msg.text }}</span>
+      </div>
+
+      <!-- VIEW MODE -->
+      <div *ngIf="!isEditing()" class="space-y-8 sm:space-y-12 animate-fade-in">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12">
+
+          <div class="space-y-6 sm:space-y-8">
+            <div>
+              <h3 class="text-[10px] sm:text-xs font-black text-gray-400 uppercase tracking-widest mb-3 sm:mb-4">
+                Identity</h3>
+              <div class="flex items-center gap-3 sm:gap-4">
+                <div
+                  class="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-indigo-600 flex items-center justify-center text-white text-xl sm:text-2xl font-black shadow-lg shadow-indigo-200">
+                  {{ profileForm.get('username')?.value?.charAt(0).toUpperCase() }}
+                </div>
+                <div>
+                  <p class="text-xl sm:text-2xl font-black text-gray-900 leading-tight">{{
+                    profileForm.get('first_name')?.value }} {{ profileForm.get('last_name')?.value }}</p>
+                  <p class="text-indigo-600 text-sm sm:text-base font-bold tracking-wide">&#64;{{
+                    profileForm.get('username')?.value }}</p>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 class="text-[10px] sm:text-xs font-black text-gray-400 uppercase tracking-widest mb-3 sm:mb-4">Email
+                Address</h3>
+              <p class="text-base sm:text-lg font-bold text-gray-800 break-all">{{ profileForm.get('email')?.value }}
+              </p>
+            </div>
+          </div>
+
+          <div class="space-y-6 sm:space-y-8">
+            <div>
+              <h3 class="text-[10px] sm:text-xs font-black text-gray-400 uppercase tracking-widest mb-3 sm:mb-4">System
+                Role</h3>
+              <span
+                class="inline-flex items-center px-3 sm:px-4 py-1 rounded-full bg-indigo-50 text-indigo-700 font-black text-[10px] sm:text-xs uppercase tracking-widest border border-indigo-100">
+                {{ profileForm.get('role')?.value }}
+              </span>
+            </div>
+
+            <div>
+              <h3 class="text-[10px] sm:text-xs font-black text-gray-400 uppercase tracking-widest mb-3 sm:mb-4">Phone
+                Number</h3>
+              <p class="text-base sm:text-lg font-bold text-gray-800">{{ profileForm.get('phone')?.value || 'Not
+                provided' }}</p>
+            </div>
+          </div>
+
+          <div class="md:col-span-2">
+            <h3 class="text-[10px] sm:text-xs font-black text-gray-400 uppercase tracking-widest mb-3 sm:mb-4">Home
+              Address</h3>
+            <p class="text-base sm:text-lg font-bold text-gray-800 leading-relaxed max-w-2xl">{{
+              profileForm.get('address')?.value || 'No address saved.' }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- EDIT MODE -->
+      <form *ngIf="isEditing()" [formGroup]="profileForm" (ngSubmit)="onSubmit()"
+        class="space-y-6 sm:space-y-8 animate-scale-up">
+
+        <div class="flex items-start justify-between mb-2">
+          <h3 class="text-3xl font-black text-gray-900 tracking-tight">Edit Profile</h3>
+          <button type="button" (click)="cancelEdit()"
+            class="text-gray-300 hover:text-gray-500 transition-colors p-2 -mr-2">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Profile Section 1: Identity -->
+        <div>
+          <h3 class="text-lg sm:text-xl font-black text-indigo-900 mb-4 sm:mb-6 flex items-center gap-2">
+            <span class="w-1.5 h-5 sm:w-2 sm:h-6 bg-indigo-600 rounded-full"></span>
+            Identity & Role
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            <div class="space-y-1.5">
+              <label
+                class="text-[10px] sm:text-sm font-bold text-gray-500 uppercase tracking-wider ml-1">Username</label>
+              <input type="text" formControlName="username"
+                class="w-full px-4 sm:px-5 py-3 bg-gray-50 border border-gray-100 rounded-xl sm:rounded-2xl text-gray-500 font-bold cursor-not-allowed shadow-inner">
+            </div>
+            <div class="space-y-1.5">
+              <label class="text-[10px] sm:text-sm font-bold text-gray-500 uppercase tracking-wider ml-1">System
+                Role</label>
+              <div class="relative">
+                <input type="text" formControlName="role"
+                  class="w-full px-4 sm:px-5 py-3 bg-indigo-50 border border-indigo-100 rounded-xl sm:rounded-2xl text-indigo-700 font-black cursor-not-allowed shadow-inner uppercase tracking-widest text-[10px] sm:text-xs">
+                <span
+                  class="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 bg-white px-2 py-0.5 rounded-lg text-[8px] sm:text-[10px] font-black text-indigo-400 border border-indigo-100">LOCKED</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr class="border-gray-50">
+
+        <!-- Profile Section 2: Personal Info -->
+        <div>
+          <h3 class="text-lg sm:text-xl font-black text-indigo-900 mb-4 sm:mb-6 flex items-center gap-2">
+            <span class="w-1.5 h-5 sm:w-2 sm:h-6 bg-indigo-600 rounded-full"></span>
+            Personal Information
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            <div class="space-y-2">
+              <label class="block text-sm font-bold text-gray-600 ml-1">First Name</label>
+              <input type="text" formControlName="first_name" placeholder="Enter first name"
+                class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl text-gray-800 font-medium focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all outline-none">
+            </div>
+            <div class="space-y-2">
+              <label class="block text-sm font-bold text-gray-600 ml-1">Last Name</label>
+              <input type="text" formControlName="last_name" placeholder="Enter last name"
+                class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl text-gray-800 font-medium focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all outline-none">
+            </div>
+            <div class="space-y-2 md:col-span-2">
+              <label class="block text-sm font-bold text-gray-600 ml-1">Email Address</label>
+              <input type="email" formControlName="email" placeholder="example@email.com"
+                class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl text-gray-800 font-medium focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all outline-none">
+            </div>
+          </div>
+        </div>
+
+        <hr class="border-gray-50">
+
+        <!-- Profile Section 3: Contact Details -->
+        <div>
+          <h3 class="text-lg sm:text-xl font-black text-indigo-900 mb-4 sm:mb-6 flex items-center gap-2">
+            <span class="w-1.5 h-5 sm:w-2 sm:h-6 bg-indigo-600 rounded-full"></span>
+            Contact & Address
+          </h3>
+          <div class="grid grid-cols-1 gap-4 sm:gap-6">
+            <div class="space-y-2">
+              <label class="block text-sm font-bold text-gray-600 ml-1">Phone Number</label>
+              <input type="text" formControlName="phone" placeholder="+91 XXXXX XXXXX"
+                class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl text-gray-800 font-medium focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all outline-none">
+            </div>
+            <div class="space-y-2">
+              <label class="block text-sm font-bold text-gray-600 ml-1">Home Address</label>
+              <textarea formControlName="address" rows="3" placeholder="Enter your full address"
+                class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl text-gray-800 font-medium focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all outline-none resize-none"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="pt-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-4">
+          <button type="button" (click)="cancelEdit()"
+            class="px-8 py-3.5 rounded-xl border-2 border-gray-100 text-gray-500 font-black hover:bg-gray-50 transition-all text-sm uppercase tracking-widest order-2 sm:order-1">
+            Cancel
+          </button>
+          <button type="submit" [disabled]="profileForm.invalid || isSaving()"
+            class="px-10 py-4 bg-[#A5A6F6] text-white font-black rounded-xl shadow-xl shadow-indigo-100 hover:shadow-indigo-200 hover:-translate-y-1 active:scale-95 transition-all text-sm uppercase tracking-widest disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none flex items-center justify-center gap-3 order-1 sm:order-2">
+            <svg *ngIf="isSaving()" class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+              </path>
+            </svg>
+            {{ isSaving() ? 'SAVING...' : 'SAVE CHANGES' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

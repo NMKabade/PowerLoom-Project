@@ -1,6 +1,6 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
-from .views import CustomTokenObtainPairView, RegisterView, JoberListView, JoberDetailView, ActivateUserView, SendOTPView, ResetPasswordOTPView
+from .views import CustomTokenObtainPairView, RegisterView, JoberListView, JoberDetailView, ActivateUserView, SendOTPView, ResetPasswordOTPView, ProfileView, PasswordResetConfirmLinkView
 
 urlpatterns = [
     path('login/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
@@ -11,4 +11,6 @@ urlpatterns = [
     path('jobers/<uuid:pk>/', JoberDetailView.as_view(), name='jober_detail'),
     path('password-reset/send-otp/', SendOTPView.as_view(), name='send_otp'),
     path('password-reset/reset/', ResetPasswordOTPView.as_view(), name='reset_password_otp'),
+    path('password-reset/confirm/', PasswordResetConfirmLinkView.as_view(), name='password_reset_confirm_link'),
+    path('profile/', ProfileView.as_view(), name='profile'),
 ]

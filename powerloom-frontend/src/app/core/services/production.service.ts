@@ -11,9 +11,14 @@ export class ProductionService {
 
   // ─── Machine Master ───────────────────────────────────────────────────────
 
+  /** Get all currencies */
+  getCurrencies(): Observable<any[]> {
+    return this.http.get<any[]>(`${BASE}/currencies/`);
+  }
+
   /** Owner: list all machines */
-  getMachines(): Observable<any[]> {
-    return this.http.get<any[]>(`${BASE}/machines/`);
+  getMachines(page: number = 1): Observable<any> {
+    return this.http.get<any>(`${BASE}/machines/`, { params: { page: page.toString() } });
   }
 
   /** Jober: active machines for dropdown */
@@ -21,13 +26,13 @@ export class ProductionService {
     return this.http.get<any[]>(`${BASE}/machines/dropdown/`);
   }
 
-  /** Owner: create a machine */
-  createMachine(data: any): Observable<any> {
+  /** Owner: create a machine (multipart/form-data for image upload) */
+  createMachine(data: FormData): Observable<any> {
     return this.http.post(`${BASE}/machines/`, data);
   }
 
-  /** Owner: update a machine */
-  updateMachine(id: string, data: any): Observable<any> {
+  /** Owner: update a machine (multipart/form-data for image upload) */
+  updateMachine(id: string, data: FormData | any): Observable<any> {
     return this.http.patch(`${BASE}/machines/${id}/`, data);
   }
 
@@ -43,9 +48,11 @@ export class ProductionService {
     return this.http.post(`${BASE}/create/`, formData);
   }
 
-  /** Jober: get own production list */
-  getMyProductions(): Observable<any[]> {
-    return this.http.get<any[]>(`${BASE}/my-list/`);
+  /** Jober: get own production list with optional filtering */
+  getMyProductions(page: number = 1, status?: string): Observable<any> {
+    let params: any = { page: page.toString() };
+    if (status && status !== 'ALL') params.status = status;
+    return this.http.get<any>(`${BASE}/my-list/`, { params });
   }
 
   /** Jober: salary & stats summary */
@@ -53,9 +60,12 @@ export class ProductionService {
     return this.http.get(`${BASE}/salary/summary/`);
   }
 
-  /** Owner: get all productions */
-  getAllProductions(): Observable<any[]> {
-    return this.http.get<any[]>(`${BASE}/all/`);
+  /** Owner: get all productions with optional filtering */
+  getAllProductions(status?: string, search?: string, page: number = 1): Observable<any> {
+    let params: any = { page: page.toString() };
+    if (status && status !== 'ALL') params.status = status;
+    if (search) params.search = search;
+    return this.http.get<any>(`${BASE}/all/`, { params });
   }
 
   /** Owner: approve or reject a production */

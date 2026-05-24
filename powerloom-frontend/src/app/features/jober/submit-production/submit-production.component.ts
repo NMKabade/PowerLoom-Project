@@ -3,19 +3,22 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { environment } from '../../../../environments/environment';
+import { ProductionService } from '../../../core/services/production.service';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 
 const BASE = 'http://localhost:8000/api/production';
 
 @Component({
   selector: 'app-submit-production',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, PaginationComponent],
   templateUrl: './submit-production.component.html',
   styleUrls: ['./submit-production.component.scss']
 })
 export class SubmitProductionComponent implements OnInit {
   private fb = inject(FormBuilder);
-  private http = inject(HttpClient);
+  private productionService = inject(ProductionService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
@@ -24,15 +27,28 @@ export class SubmitProductionComponent implements OnInit {
   isListLoading = true;
   listError = '';
 
+  // Pagination & Filtering
+  currentPage = 1;
+  pageSize = 10;
+  totalCount = 0;
+  selectedStatus = 'ALL';
+
   // ── Modal state ────────────────────────────────────────────────────────────
   showModal = false;
   isSubmitting = false;
   formError = '';
   formSuccess = '';
 
+  // ── View Modal state ───────────────────────────────────────────────────────
+  isViewModalOpen = false;
+  selectedProd: any = null;
+  proofFileUrl: string | null = null;
+
   // ── Machines dropdown ──────────────────────────────────────────────────────
   machines: any[] = [];
   isMachinesLoading = true;
+  selectedJoberRate = 0;
+  selectedPeak = 0;
 
   // ── Form ───────────────────────────────────────────────────────────────────
   prodForm = this.fb.group({
@@ -42,6 +58,16 @@ export class SubmitProductionComponent implements OnInit {
     rate: [{ value: '', disabled: true }, [Validators.required, Validators.min(0.01)]],
     proof_file: [null as any]
   });
+
+  get quantityValue(): number {
+    const val = this.prodForm.get('quantity')?.value;
+    return val ? Number(val) : 0;
+  }
+
+  get rateValue(): number {
+    const val = this.prodForm.get('rate')?.value;
+    return val ? Number(val) : 0;
+  }
 
   // ── File preview ───────────────────────────────────────────────────────────
   proofFiles: File[] = [];
@@ -63,14 +89,29 @@ export class SubmitProductionComponent implements OnInit {
 
   loadProductions() {
     this.isListLoading = true;
-    this.http.get<any[]>(`${BASE}/my-list/`).subscribe({
-      next: (data) => { this.productions = data; this.isListLoading = false; },
+    this.productionService.getMyProductions(this.currentPage, this.selectedStatus).subscribe({
+      next: (data: any) => { 
+        this.productions = data.results; 
+        this.totalCount = data.count || 0;
+        this.isListLoading = false; 
+      },
       error: () => { this.listError = 'Failed to load productions.'; this.isListLoading = false; }
     });
   }
 
+  onStatusChange(status: string) {
+    this.selectedStatus = status;
+    this.currentPage = 1;
+    this.loadProductions();
+  }
+
+  onPageChange(page: number) {
+    this.currentPage = page;
+    this.loadProductions();
+  }
+
   loadMachines() {
-    this.http.get<any[]>(`${BASE}/machines/dropdown/`).subscribe({
+    this.productionService.getMachinesDropdown().subscribe({
       next: (data) => { this.machines = data; this.isMachinesLoading = false; },
       error: () => { this.isMachinesLoading = false; }
     });
@@ -93,6 +134,8 @@ export class SubmitProductionComponent implements OnInit {
     const selectedId = (event.target as HTMLSelectElement).value;
     const machine = this.machines.find(m => m.machine_id === selectedId);
     this.prodForm.get('rate')?.setValue(machine ? machine.rate_per_meter : '');
+    this.selectedJoberRate = machine ? machine.jober_rate : 0;
+    this.selectedPeak = machine ? machine.peak : 0;
   }
 
   onFileChange(event: any) {
@@ -101,6 +144,13 @@ export class SubmitProductionComponent implements OnInit {
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
+
+      if (file.type !== 'image/jpeg' && file.type !== 'image/png') {
+        this.formError = 'Only JPG and PNG files are allowed.';
+        continue;
+      }
+      this.formError = '';
+
       this.proofFiles.push(file);
       const isImage = file.type.startsWith('image/');
       if (isImage) {
@@ -138,7 +188,7 @@ export class SubmitProductionComponent implements OnInit {
       formData.append('proof_file', this.proofFiles[0]);
     }
 
-    this.http.post(`${BASE}/create/`, formData).subscribe({
+    this.productionService.submitProduction(formData).subscribe({
       next: () => {
         this.isSubmitting = false;
         this.formSuccess = 'Production log submitted successfully!';
@@ -160,5 +210,29 @@ export class SubmitProductionComponent implements OnInit {
       case 'REJECTED': return 'bg-red-100 text-red-700 border border-red-200';
       default:         return 'bg-amber-100 text-amber-700 border border-amber-200';
     }
+  }
+
+  // ── View Modal Logic ───────────────────────────────────────────────────────
+  openViewModal(prod: any) {
+    console.log('Opening View Modal for:', prod);
+    this.selectedProd = prod;
+    this.isViewModalOpen = true;
+  }
+
+  closeViewModal() {
+    this.isViewModalOpen = false;
+    this.selectedProd = null;
+  }
+
+  openProofModal(url: string) {
+    if (url && !url.startsWith('http')) {
+      this.proofFileUrl = `${environment.BaseUrl}${url}`;
+    } else {
+      this.proofFileUrl = url;
+    }
+  }
+
+  closeProofModal() {
+    this.proofFileUrl = null;
   }
 }

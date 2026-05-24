@@ -34,9 +34,7 @@ export class AuthService {
   login(credentials: any) {
     return this.http.post<any>(`${this.apiUrl}/login/`, credentials).pipe(
       tap(response => {
-        localStorage.setItem('token', response.access);
-        localStorage.setItem('role', response.role);
-        localStorage.setItem('username', response.username);
+        this.saveTokens(response);
         this.currentUser.set({ id: 0, username: response.username, role: response.role });
       })
     );
@@ -47,15 +45,50 @@ export class AuthService {
   }
 
   logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('role');
-    localStorage.removeItem('username');
+    this.clearTokens();
     this.currentUser.set(null);
     this.router.navigate(['/login']);
   }
 
+  getProfile() {
+    return this.http.get<any>(`${this.apiUrl}/profile/`);
+  }
+
+  updateProfile(data: any) {
+    return this.http.patch<any>(`${this.apiUrl}/profile/`, data);
+  }
+
   getToken() {
     return localStorage.getItem('token');
+  }
+
+  getRefreshToken() {
+    return localStorage.getItem('refresh_token');
+  }
+
+  refreshToken() {
+    const refresh = this.getRefreshToken();
+    return this.http.post<any>(`${this.apiUrl}/token/refresh/`, { refresh }).pipe(
+      tap(response => {
+        localStorage.setItem('token', response.access);
+      })
+    );
+  }
+
+  private saveTokens(response: any) {
+    localStorage.setItem('token', response.access);
+    if (response.refresh) {
+      localStorage.setItem('refresh_token', response.refresh);
+    }
+    localStorage.setItem('role', response.role);
+    localStorage.setItem('username', response.username);
+  }
+
+  private clearTokens() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('role');
+    localStorage.removeItem('username');
   }
 
   getRole() {

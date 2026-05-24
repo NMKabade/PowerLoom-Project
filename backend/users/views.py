@@ -16,6 +16,21 @@ import random
 
 User = get_user_model()
 
+def send_password_reset_link(user):
+    uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+    token = default_token_generator.make_token(user)
+    reset_link = f"http://localhost:4200/reset-password?uid={uidb64}&token={token}"
+    
+    subject = 'Set Your PowerLoom Password'
+    message = f'Hi {user.first_name},\n\nYour account has been activated! Please set your password using the link below:\n{reset_link}\n\nThanks,\nPowerLoom Team'
+    send_mail(
+        subject, 
+        message, 
+        getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@powerloom.local'), 
+        [user.email],
+        fail_silently=False
+    )
+
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
@@ -80,17 +95,28 @@ class ActivateUserView(APIView):
         if user is not None and default_token_generator.check_token(user, token):
             user.is_active = True
             user.save()
-            return Response({"message": "Account activated successfully"}, status=status.HTTP_200_OK)
+            
+            # Automatically send password reset link after activation
+            send_password_reset_link(user)
+            
+            return Response({"message": "Account activated successfully. A password setup link has been sent to your email."}, status=status.HTTP_200_OK)
         else:
             return Response({"error": "Activation link is invalid or expired!"}, status=status.HTTP_400_BAD_REQUEST)
 
 from django.shortcuts import get_object_or_404
 
+from production.pagination import CustomPagination
+
 class JoberListView(APIView):
     permission_classes = [permissions.IsAuthenticated, IsAdminUserRole]
 
     def get(self, request):
-        jobers = User.objects.filter(role='JOBER')
+        jobers = User.objects.filter(role='JOBER').order_by('username')
+        paginator = CustomPagination()
+        page = paginator.paginate_queryset(jobers, request)
+        if page is not None:
+            serializer = UserSerializer(page, many=True)
+            return paginator.get_paginated_response(serializer.data)
         serializer = UserSerializer(jobers, many=True)
         return Response(serializer.data)
 
@@ -185,3 +211,42 @@ class ResetPasswordOTPView(APIView):
         user.save()
 
         return Response({"message": "Password reset successfully. You can now login."}, status=status.HTTP_200_OK)
+
+class PasswordResetConfirmLinkView(APIView):
+    permission_classes = [permissions.AllowAny]
+    authentication_classes = []
+
+    def post(self, request):
+        uidb64 = request.data.get('uid')
+        token = request.data.get('token')
+        new_password = request.data.get('new_password')
+
+        if not all([uidb64, token, new_password]):
+            return Response({"error": "Missing required parameters."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+
+        if user is not None and default_token_generator.check_token(user, token):
+            user.set_password(new_password)
+            user.save()
+            return Response({"message": "Password has been reset successfully."}, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Invalid or expired reset link."}, status=status.HTTP_400_BAD_REQUEST)
+
+class ProfileView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)
+
+    def patch(self, request):
+        serializer = UserSerializer(request.user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

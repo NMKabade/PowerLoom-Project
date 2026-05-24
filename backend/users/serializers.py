@@ -8,14 +8,16 @@ User = get_user_model()
 class JoberProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = JoberProfile
-        fields = ['phone', 'address']
+        fields = ['phone', 'address', 'profile_picture']
 
 class UserSerializer(serializers.ModelSerializer):
-    profile = JoberProfileSerializer(required=False)
+    phone = serializers.CharField(source='profile.phone', required=False, allow_null=True, allow_blank=True)
+    address = serializers.CharField(source='profile.address', required=False, allow_null=True, allow_blank=True)
+    profile_picture = serializers.ImageField(source='profile.profile_picture', required=False, allow_null=True)
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'role', 'password', 'profile']
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'role', 'password', 'phone', 'address', 'profile_picture', 'is_active']
         extra_kwargs = {'password': {'write_only': True}}
     
     def create(self, validated_data):

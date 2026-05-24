@@ -9,6 +9,8 @@ import { ManageJobersComponent } from './features/owner/manage-jobers/manage-job
 import { ManageMachinesComponent } from './features/owner/manage-machines/manage-machines.component';
 import { DashboardComponent as JoberDashboardComponent } from './features/jober/dashboard/dashboard.component';
 import { SubmitProductionComponent } from './features/jober/submit-production/submit-production.component';
+import { ProfileComponent } from './features/profile/profile.component';
+import { ResetPasswordComponent } from './features/auth/reset-password/reset-password.component';
 import { roleGuard } from './core/guards/role.guard';
 
 export const routes: Routes = [
@@ -17,6 +19,7 @@ export const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'activate', component: ActivateComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
+  { path: 'reset-password', component: ResetPasswordComponent },
   
   // Owner Routes
   { 
@@ -43,6 +46,8 @@ export const routes: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },
+  
+  { path: 'profile', component: ProfileComponent, canActivate: [roleGuard], data: { role: ['ADMIN', 'JOBER'] } },
   
   { path: '**', redirectTo: 'login' }
 ];

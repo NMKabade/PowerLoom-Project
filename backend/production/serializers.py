@@ -1,8 +1,15 @@
 from rest_framework import serializers
-from .models import Production, MachineMaster
+from .models import Production, MachineMaster, CurrencyMaster
 from users.serializers import UserSerializer
 
+class CurrencyMasterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CurrencyMaster
+        fields = '__all__'
+
 class MachineMasterSerializer(serializers.ModelSerializer):
+    currency_details = CurrencyMasterSerializer(source='currency', read_only=True)
+
     class Meta:
         model = MachineMaster
         fields = '__all__'

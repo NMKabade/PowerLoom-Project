@@ -23,7 +23,10 @@ export class DashboardComponent implements OnInit {
       .subscribe(res => this.stats = res);
 
     this.productionService.getMyProductions()
-      .subscribe(res => this.myProductions = res.slice(0, 10));
+      .subscribe((res: any) => {
+        const list = Array.isArray(res) ? res : (res.results ?? []);
+        this.myProductions = list.slice(0, 10);
+      });
   }
 
   goToSubmit() {

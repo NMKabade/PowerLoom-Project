@@ -12,8 +12,8 @@ export class UserService {
   // ─── Jobers (Owner) ───────────────────────────────────────────────────────
 
   /** Owner: list all jobers */
-  getJobers(): Observable<any[]> {
-    return this.http.get<any[]>(`${BASE}/jobers/`);
+  getJobers(page: number = 1): Observable<any> {
+    return this.http.get<any>(`${BASE}/jobers/`, { params: { page: page.toString() } });
   }
 
   /** Owner: create a new jober */
